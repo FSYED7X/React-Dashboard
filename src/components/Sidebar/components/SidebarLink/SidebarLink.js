@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
+  Box,
   Collapse,
   Divider,
   List,
@@ -17,6 +18,7 @@ import useStyles from "./styles";
 
 // components
 import Dot from "../Dot";
+import AppContext from "../../../../store/AppContext/AppContext";
 
 export default function SidebarLink({
   link,
@@ -24,11 +26,14 @@ export default function SidebarLink({
   label,
   children,
   location,
-  isSidebarOpened,
   nested,
   type,
+  action,
+  hidden,
+  color,
 }) {
   var classes = useStyles();
+  const { sideNavOpen, setsideNavOpen, signOut } = useContext(AppContext);
 
   // local
   var [isOpen, setIsOpen] = useState(false);
@@ -36,11 +41,15 @@ export default function SidebarLink({
     link &&
     (location.pathname === link || location.pathname.indexOf(link) !== -1);
 
+  if (hidden) {
+    return null;
+  }
+
   if (type === "title")
     return (
       <Typography
         className={classnames(classes.linkText, classes.sectionTitle, {
-          [classes.linkTextHidden]: !isSidebarOpened,
+          [classes.linkTextHidden]: !sideNavOpen,
         })}
       >
         {label}
@@ -49,9 +58,32 @@ export default function SidebarLink({
 
   if (type === "divider") return <Divider className={classes.divider} />;
 
+  if (type === "action") {
+    return (
+      <ListItem button onClick={action} className={classes.link}>
+        <ListItemIcon
+          className={classnames(classes.linkIcon, classes[color], {
+            [classes.linkIconActive]: isLinkActive,
+          })}
+        >
+          {icon}
+        </ListItemIcon>
+        <ListItemText
+          classes={{
+            primary: classnames(classes.linkText,classes[color], {
+              [classes.linkTextHidden]: !sideNavOpen,
+            }),
+          }}
+          primary={label}
+        />
+      </ListItem>
+    );
+  }
+
   if (!children)
     return (
-      <ListItem
+  <Box py={0.5}>
+        <ListItem
         button
         component={link && Link}
         to={link}
@@ -62,10 +94,10 @@ export default function SidebarLink({
             [classes.linkNested]: nested,
           }),
         }}
-        disableRipple
+        // disableRipple
       >
         <ListItemIcon
-          className={classnames(classes.linkIcon, {
+          className={classnames(classes.linkIcon, classes[color], {
             [classes.linkIconActive]: isLinkActive,
           })}
         >
@@ -73,25 +105,27 @@ export default function SidebarLink({
         </ListItemIcon>
         <ListItemText
           classes={{
-            primary: classnames(classes.linkText, {
+            primary: classnames(classes.linkText, classes[color], {
               [classes.linkTextActive]: isLinkActive,
-              [classes.linkTextHidden]: !isSidebarOpened,
+              [classes.linkTextHidden]: !sideNavOpen,
             }),
           }}
           primary={label}
         />
       </ListItem>
+  </Box>
+
     );
 
   return (
-    <>
+    <Box py={0.5}>
       <ListItem
         button
         component={link && Link}
         onClick={toggleCollapse}
         className={classes.link}
         to={link}
-        disableRipple
+        // disableRipple
       >
         <ListItemIcon
           className={classnames(classes.linkIcon, {
@@ -104,7 +138,7 @@ export default function SidebarLink({
           classes={{
             primary: classnames(classes.linkText, {
               [classes.linkTextActive]: isLinkActive,
-              [classes.linkTextHidden]: !isSidebarOpened,
+              [classes.linkTextHidden]: !sideNavOpen,
             }),
           }}
           primary={label}
@@ -112,17 +146,17 @@ export default function SidebarLink({
       </ListItem>
       {children && (
         <Collapse
-          in={isOpen && isSidebarOpened}
+          in={isOpen && sideNavOpen}
           timeout="auto"
           unmountOnExit
           className={classes.nestedList}
         >
           <List component="div" disablePadding>
-            {children.map(childrenLink => (
+            {children.map((childrenLink) => (
               <SidebarLink
                 key={childrenLink && childrenLink.link}
                 location={location}
-                isSidebarOpened={isSidebarOpened}
+                sideNavOpen={sideNavOpen}
                 classes={classes}
                 nested
                 {...childrenLink}
@@ -131,13 +165,13 @@ export default function SidebarLink({
           </List>
         </Collapse>
       )}
-    </>
+    </Box>
   );
 
   // ###########################################################
 
   function toggleCollapse(e) {
-    if (isSidebarOpened) {
+    if (sideNavOpen) {
       e.preventDefault();
       setIsOpen(!isOpen);
     }

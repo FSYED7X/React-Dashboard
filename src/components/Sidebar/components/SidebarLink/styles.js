@@ -1,7 +1,12 @@
 import { makeStyles } from "@material-ui/styles";
 
-export default makeStyles(theme => ({
+export default makeStyles((theme) => ({
   link: {
+    // marginBottom:theme.spacing(1),
+    // padding: theme.spacing(1.5),
+    paddingRight: theme.spacing(0.5),
+    paddingLeft: theme.spacing(0.5),
+    // transition: theme.transitions.create(""),
     textDecoration: "none",
     "&:hover, &:focus": {
       backgroundColor: theme.palette.background.light,
@@ -17,10 +22,10 @@ export default makeStyles(theme => ({
     },
   },
   linkIcon: {
-    marginRight: theme.spacing(1),
+    // marginRight: theme.spacing(1),
     color: theme.palette.text.secondary + "99",
     transition: theme.transitions.create("color"),
-    width: 24,
+
     display: "flex",
     justifyContent: "center",
   },
@@ -29,7 +34,7 @@ export default makeStyles(theme => ({
   },
   linkText: {
     padding: 0,
-    color: theme.palette.text.secondary + "CC",
+    // color: theme.palette.text.secondary + "CC",
     transition: theme.transitions.create(["opacity", "color"]),
     fontSize: 16,
   },
@@ -52,5 +57,8 @@ export default makeStyles(theme => ({
     marginBottom: theme.spacing(4),
     height: 1,
     backgroundColor: "#D8D8D880",
+  },
+  danger: {
+    color: theme.palette.error.main,
   },
 }));

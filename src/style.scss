@@ -1,0 +1,8 @@
+@font-face {
+  font-family: primaryFont;
+  src: url(../src/assets/fonts/Montserrat/Montserrat-Medium.ttf);
+}
+
+*{
+    font-family: primaryFont!important;
+}

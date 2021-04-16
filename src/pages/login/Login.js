@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Grid,
   CircularProgress,
@@ -9,25 +9,19 @@ import {
   TextField,
   Fade,
 } from "@material-ui/core";
-import { withRouter } from "react-router-dom";
+import { useHistory, withRouter } from "react-router-dom";
 import classnames from "classnames";
 
 // styles
 import useStyles from "./styles";
-
 // logo
 import logo from "./logo.svg";
 import google from "../../images/google.svg";
-
-// context
-import { useUserDispatch, loginUser } from "../../context/UserContext";
-
+import AppContext from "../../store/AppContext/AppContext";
+import { setUserDetails } from "../../utils/user";
 function Login(props) {
   var classes = useStyles();
-
-  // global
-  var userDispatch = useUserDispatch();
-
+  const { setUser, setAuthToken } = useContext(AppContext);
   // local
   var [isLoading, setIsLoading] = useState(false);
   var [error, setError] = useState(null);
@@ -35,12 +29,30 @@ function Login(props) {
   var [nameValue, setNameValue] = useState("");
   var [loginValue, setLoginValue] = useState("admin@flatlogic.com");
   var [passwordValue, setPasswordValue] = useState("password");
+  const history = useHistory();
+
+  function login() {
+    setError(false);
+    setIsLoading(true);
+    if (!!loginValue && !!passwordValue) {
+      setTimeout(() => {
+        setError(null);
+        setIsLoading(false);
+        setUserDetails({ name: loginValue });
+        setUser({ name: loginValue });
+        history.push("/app/dashboard");
+      }, 2000);
+    } else {
+      setError(true);
+      setIsLoading(false);
+    }
+  }
 
   return (
     <Grid container className={classes.container}>
       <div className={classes.logotypeContainer}>
         <img src={logo} alt="logo" className={classes.logotypeImage} />
-        <Typography className={classes.logotypeText}>Material Admin</Typography>
+        <Typography className={classes.logotypeText}>Motus Admin</Typography>
       </div>
       <div className={classes.formContainer}>
         <div className={classes.form}>
@@ -57,20 +69,20 @@ function Login(props) {
           {activeTabId === 0 && (
             <React.Fragment>
               <Typography variant="h1" className={classes.greeting}>
-                Good Morning, User
+                Login
               </Typography>
-              <Button size="large" className={classes.googleButton}>
+              {/* <Button size="large" className={classes.googleButton}>
                 <img src={google} alt="google" className={classes.googleIcon} />
                 &nbsp;Sign in with Google
-              </Button>
+              </Button> */}
               <div className={classes.formDividerContainer}>
                 <div className={classes.formDivider} />
-                <Typography className={classes.formDividerWord}>or</Typography>
-                <div className={classes.formDivider} />
+                {/* <Typography className={classes.formDividerWord}>or</Typography> */}
+                {/* <div className={classes.formDivider} /> */}
               </div>
               <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
+                  Something is wrong with your login or password
                 </Typography>
               </Fade>
               <TextField
@@ -82,7 +94,7 @@ function Login(props) {
                   },
                 }}
                 value={loginValue}
-                onChange={e => setLoginValue(e.target.value)}
+                onChange={(e) => setLoginValue(e.target.value)}
                 margin="normal"
                 placeholder="Email Adress"
                 type="email"
@@ -97,7 +109,7 @@ function Login(props) {
                   },
                 }}
                 value={passwordValue}
-                onChange={e => setPasswordValue(e.target.value)}
+                onChange={(e) => setPasswordValue(e.target.value)}
                 margin="normal"
                 placeholder="Password"
                 type="password"
@@ -111,16 +123,7 @@ function Login(props) {
                     disabled={
                       loginValue.length === 0 || passwordValue.length === 0
                     }
-                    onClick={() =>
-                      loginUser(
-                        userDispatch,
-                        loginValue,
-                        passwordValue,
-                        props.history,
-                        setIsLoading,
-                        setError,
-                      )
-                    }
+                    onClick={login}
                     variant="contained"
                     color="primary"
                     size="large"
@@ -148,7 +151,7 @@ function Login(props) {
               </Typography>
               <Fade in={error}>
                 <Typography color="secondary" className={classes.errorMessage}>
-                  Something is wrong with your login or password :(
+                  Something is wrong with your login or password
                 </Typography>
               </Fade>
               <TextField
@@ -160,7 +163,7 @@ function Login(props) {
                   },
                 }}
                 value={nameValue}
-                onChange={e => setNameValue(e.target.value)}
+                onChange={(e) => setNameValue(e.target.value)}
                 margin="normal"
                 placeholder="Full Name"
                 type="text"
@@ -175,7 +178,7 @@ function Login(props) {
                   },
                 }}
                 value={loginValue}
-                onChange={e => setLoginValue(e.target.value)}
+                onChange={(e) => setLoginValue(e.target.value)}
                 margin="normal"
                 placeholder="Email Adress"
                 type="email"
@@ -190,7 +193,7 @@ function Login(props) {
                   },
                 }}
                 value={passwordValue}
-                onChange={e => setPasswordValue(e.target.value)}
+                onChange={(e) => setPasswordValue(e.target.value)}
                 margin="normal"
                 placeholder="Password"
                 type="password"
@@ -201,16 +204,7 @@ function Login(props) {
                   <CircularProgress size={26} />
                 ) : (
                   <Button
-                    onClick={() =>
-                      loginUser(
-                        userDispatch,
-                        loginValue,
-                        passwordValue,
-                        props.history,
-                        setIsLoading,
-                        setError,
-                      )
-                    }
+                    onClick={login}
                     disabled={
                       loginValue.length === 0 ||
                       passwordValue.length === 0 ||
@@ -245,7 +239,16 @@ function Login(props) {
           )}
         </div>
         <Typography color="primary" className={classes.copyright}>
-        © 2014-{new Date().getFullYear()} <a style={{ textDecoration: 'none', color: 'inherit' }} href="https://flatlogic.com" rel="noopener noreferrer" target="_blank">Flatlogic</a>, LLC. All rights reserved.
+          © 2014-{new Date().getFullYear()}{" "}
+          <a
+            style={{ textDecoration: "none", color: "inherit" }}
+            href="https://flatlogic.com"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Flatlogic
+          </a>
+          , LLC. All rights reserved.
         </Typography>
       </div>
     </Grid>

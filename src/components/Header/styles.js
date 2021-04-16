@@ -99,13 +99,13 @@ export default makeStyles(theme => ({
   },
   headerMenuButtonSandwich: {
     marginLeft: 9,
-    [theme.breakpoints.down("sm")]: {
-      marginLeft: 0
+    [theme.breakpoints.down("xs")]: {
+      marginLeft: 0,
+      padding: theme.spacing(0.5),
     },
-    padding: theme.spacing(0.5),
   },
   headerMenuButtonCollapse: {
-    marginRight: theme.spacing(2),
+    // marginRight: theme.spacing(2),
   },
   headerIcon: {
     fontSize: 28,
